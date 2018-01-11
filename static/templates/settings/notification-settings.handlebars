@@ -167,6 +167,46 @@
                 </label>
             </div>
 
+        </div>
+
+        <div class="input-group {{#unless enable_sound_select}}control-label-disabled{{/unless}}">
+            <label for="notification_sound">
+                <h3 class="light">{{t "Notification sound" }}</h3>
+            </label>
+            <select name="notification_sound" id="notification_sound"
+                {{#unless enable_sound_select}}
+                disabled
+                {{/unless}}>
+                {{#each page_params.available_notification_sounds}}
+                <option value="{{ this }}">{{ this }}</option>
+                {{/each}}
+            </select>
+            <a id="play_notification_sound">{{t "Play sound" }}</a>
+        </div>
+
+        <div id="other_notifications">
+
+            <h3 class="light">{{t "Other notifications I want:" }}</h3>
+
+            <div class="side-padded-container">
+                <div class="input-group no-margin" id="digest_container">
+                    <label class="checkbox">
+                        <input type="checkbox" name="enable_digest_emails" id="enable_digest_emails"
+                               {{#if page_params.enable_digest_emails}}
+                               checked="checked"
+                               {{/if}} />
+                        <span></span>
+                    </label>
+                    <label for="enable_digest_emails" class="inline-block">
+                        {{t "Digest emails when I'm away" }}
+                    </label>
+                </div>
+            </div>
+            {{!-- If you add another control group here, make sure to change
+            $("#other_notifications").hide(); in settings.js to
+            $("#digest_container").hide();
+            --}}
+
             {{!-- If we end up removing the last control group, make sure to change
             $("#digest_container").hide(); in settings_notifications.js to
             $("#other_notifications").hide();
@@ -174,4 +214,21 @@
         </div>
     </form>
 
+    <h3 class="light attributions_title">Attributions</h3>
+    <ul>
+        <li><a href="https://freesound.org/s/140867/">
+            "Bell, Candle Damper" by juskiddink on Freesound
+        </a></li>
+        <li><a href="https://freesound.org/s/411089/">
+            "ding" by InspectorJ on Freesound
+        </a></li>
+        <li><a href="https://freesound.org/s/244325/">
+            "Three Knocks on a wooden desk" by Philip_Daniels on Freesound
+        </a></li>
+        <li><a href="https://freesound.org/s/371086/">
+            "Guitar Tada" by actsofpaint on Freesound
+        </a></li>
+        <li><a href="https://freesound.org/s/113619/">
+            "Finger on Guitar Body" by Vidsyn on Freesound
+        </a></li>
 </div>

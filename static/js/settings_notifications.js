@@ -3,6 +3,7 @@ var settings_notifications = (function () {
 var exports = {};
 
 var notification_settings = [
+    "notification_sound",
     "enable_desktop_notifications",
     "enable_digest_emails",
     "enable_offline_email_notifications",
@@ -45,14 +46,26 @@ exports.set_up = function () {
             var data = {};
             var setting_name = $('label[for=' + setting + ']').text().trim();
             var context = {setting_name: setting_name};
-            var setting_data = $(this).prop('checked');
+
+            var setting_data;
+            if (setting === 'notification_sound') {
+                setting_data = $(this).find(":selected").prop('value');
+            } else {
+                setting_data = $(this).prop('checked');
+            }
+
             data[setting] = JSON.stringify(setting_data);
 
             channel.patch({
                 url: '/json/settings/notifications',
                 data: data,
                 success: function () {
-                    if (setting_data === true) {
+                    if (setting === 'notification_sound') {
+                        // `notification_sound` isn't a boolean, so
+                        // 'Enabled'/'Disabled' doesn't make sense.
+                        ui_report.success(i18n.t("Changed: __- setting_name__",
+                            context), notify_settings_status);
+                    } else if (setting_data === true) {
                         ui_report.success(i18n.t("Enabled: __- setting_name__",
                             context), notify_settings_status);
                     } else {
@@ -79,6 +92,32 @@ exports.set_up = function () {
                 });
             }
         });
+    });
+
+    $("#play_notification_sound").click(function () {
+        $("#notifications-area").find("audio")[0].play();
+    });
+
+    $("#notification_sound").val(page_params.notification_sound);
+
+    $("#enable_sounds").change(function () {
+        if (this.checked || $("#enable_stream_sounds").is(":checked")) {
+            $("#notification_sound").prop("disabled", false);
+            $("#notification_sound").parent().removeClass("control-label-disabled");
+        } else {
+            $("#notification_sound").prop("disabled", true);
+            $("#notification_sound").parent().addClass("control-label-disabled");
+        }
+    });
+
+    $("#enable_stream_sounds").change(function () {
+        if (this.checked || $("#enable_sounds").is(":checked")) {
+            $("#notification_sound").prop("disabled", false);
+            $("#notification_sound").parent().removeClass("control-label-disabled");
+        } else {
+            $("#notification_sound").prop("disabled", true);
+            $("#notification_sound").parent().addClass("control-label-disabled");
+        }
     });
 
     $("#enable_desktop_notifications").change(function () {

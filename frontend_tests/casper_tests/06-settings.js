@@ -302,6 +302,29 @@ casper.thenClick('a[data-code="en"]');
  */
 casper.waitUntilVisible('#display-settings-status', function () {
     casper.test.assertSelectorHasText('#display-settings-status', 'English ist die neue Standardsprache!  Du musst das Fenster neu laden um die Änderungen anzuwenden');
+    casper.reload();
+});
+
+casper.then(function () {
+    casper.waitUntilVisible('[data-section="notifications"]', function () {
+        casper.test.info('Testing disabled/enabled behavior for Notification sound');
+        casper.click('[data-section="notifications"]');
+    });
+});
+
+casper.then(function () {
+    // At the beginning, `#enable_sounds` will be on and `#enable_stream_sounds`
+    // will be off by default.
+    casper.test.assertVisible("#notification_sound:enabled", "Notification sound selector is enabled");
+
+    casper.click('#enable_stream_sounds');
+    casper.test.assertVisible("#notification_sound:enabled", "Notification sound selector is enabled");
+
+    casper.click('#enable_sounds');
+    casper.test.assertVisible("#notification_sound:enabled", "Notification sound selector is enabled");
+
+    casper.click('#enable_stream_sounds');
+    casper.test.assertVisible("#notification_sound:disabled", "Notification sound selector is disabled");
 });
 
 casper.thenOpen("http://zulip.zulipdev.com:9981/");
