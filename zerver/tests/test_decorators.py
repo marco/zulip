@@ -37,7 +37,7 @@ from zerver.decorator import (
 from zerver.lib.cache import ignore_unhashable_lru_cache
 from zerver.lib.validator import (
     check_string, check_dict, check_dict_only, check_bool, check_float, check_int, check_list, Validator,
-    check_variable_type, equals, check_none_or, check_url, check_short_string
+    check_bool_or_string, check_variable_type, equals, check_none_or, check_url, check_short_string
 )
 from zerver.models import \
     get_realm, get_user, UserProfile, Client, Realm, Recipient
@@ -449,6 +449,16 @@ class ValidatorTestCase(TestCase):
 
         x = 4
         self.assertEqual(check_bool('x', x), 'x is not a boolean')
+
+    def test_check_bool_or_string(self) -> None:
+        x = True  # type: Any
+        self.assertEqual(check_bool_or_string('x', x), None)
+
+        x = 'x'
+        self.assertEqual(check_bool_or_string('x', x), None)
+
+        x = 4
+        self.assertEqual(check_bool_or_string('x', x), 'x is not a boolean or a string')
 
     def test_check_int(self) -> None:
         x = 5  # type: Any

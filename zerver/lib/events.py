@@ -34,6 +34,7 @@ from zerver.lib.actions import (
     do_get_streams, get_default_streams_for_realm,
     gather_subscriptions_helper, get_cross_realm_dicts,
     get_status_dict, streams_to_dicts_sorted,
+    get_available_notification_sounds,
     default_stream_groups_to_dicts_sorted
 )
 from zerver.lib.user_groups import user_groups_in_realm_serialized
@@ -256,6 +257,9 @@ def fetch_initial_state_data(user_profile: UserProfile,
         for notification in UserProfile.notification_setting_types:
             state[notification] = getattr(user_profile, notification)
         state['default_desktop_notifications'] = user_profile.default_desktop_notifications
+
+    if want('available_notification_sounds'):
+        state['available_notification_sounds'] = get_available_notification_sounds()
 
     if want('zulip_version'):
         state['zulip_version'] = ZULIP_VERSION
