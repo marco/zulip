@@ -272,7 +272,7 @@ def report_roadmap(edges, methods):
         print(child)
         for method in module_methods[child]:
             print('    ' + child + '.' + method)
-            for caller in sorted(callers[(child, method)]):
+            for caller, extension in sorted(callers[(child, method)]):
                 print('        ' + caller)
             print()
         print()
