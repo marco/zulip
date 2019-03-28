@@ -172,7 +172,7 @@ class Command(makemessages.Command):
 
         dirname = os.path.join(settings.DEPLOY_ROOT, 'static/js')
         for filename in os.listdir(dirname):
-            if filename.endswith('.js') and not filename.startswith('.'):
+            if (filename.endswith('.js') or filename.endswith('.ts')) and not filename.startswith('.'):
                 with open(os.path.join(dirname, filename)) as reader:
                     data = reader.read()
                     data = self.ignore_javascript_comments(data)

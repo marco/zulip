@@ -18,7 +18,8 @@ else:
 class IgnoreBundlesManifestStaticFilesStorage(ManifestStaticFilesStorage):
     def hashed_name(self, name: str, content: Optional[str]=None, filename: Optional[str]=None) -> str:
         ext = os.path.splitext(name)[1]
-        if name.startswith("webpack-bundles"):
+        if (name.startswith("webpack-bundles") and
+                ext in ['.js', '.css', '.map', '.ts']):
             # Hack to avoid renaming already-hashnamed webpack bundles
             # when minifying; this was causing every bundle to have
             # two hashes appended to its name, one by webpack and one
