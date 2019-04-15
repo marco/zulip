@@ -162,6 +162,9 @@ DEFAULT_SETTINGS = {
     # Historical name for SOCIAL_AUTH_GITHUB_KEY; still allowed in production.
     'GOOGLE_OAUTH2_CLIENT_ID': None,
 
+    'VIDEO_ZOOM_CLIENT_ID': get_secret('video_zoom_client_id', development_only=True),
+    'VIDEO_ZOOM_CLIENT_SECRET': get_secret('video_zoom_client_secret'),
+
     # Other auth
     'SSO_APPEND_DOMAIN': None,
 

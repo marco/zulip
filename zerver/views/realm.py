@@ -22,7 +22,6 @@ from zerver.lib.response import json_success, json_error
 from zerver.lib.validator import check_string, check_dict, check_bool, check_int
 from zerver.lib.streams import access_stream_by_id
 from zerver.lib.domains import validate_domain
-from zerver.lib.video_calls import request_zoom_video_call_url
 from zerver.models import Realm, UserProfile
 from zerver.forms import check_subdomain_available as check_subdomain
 from confirmation.models import get_object_from_key, Confirmation, ConfirmationKeyException
@@ -67,9 +66,6 @@ def update_realm(
         default_twenty_four_hour_time: Optional[bool]=REQ(validator=check_bool, default=None),
         video_chat_provider: Optional[int]=REQ(validator=check_int, default=None),
         google_hangouts_domain: Optional[str]=REQ(validator=check_string, default=None),
-        zoom_user_id: Optional[str]=REQ(validator=check_string, default=None),
-        zoom_api_key: Optional[str]=REQ(validator=check_string, default=None),
-        zoom_api_secret: Optional[str]=REQ(validator=check_string, default=None),
         digest_weekday: Optional[int]=REQ(validator=check_int, default=None),
 ) -> HttpResponse:
     realm = user_profile.realm
@@ -92,29 +88,6 @@ def update_realm(
             validate_domain(google_hangouts_domain)
         except ValidationError as e:
             return json_error(_('Invalid domain: {}').format(e.messages[0]))
-    if video_chat_provider == Realm.VIDEO_CHAT_PROVIDERS['zoom']['id']:
-        if not zoom_api_secret:
-            # Use the saved Zoom API secret if a new value isn't being sent
-            zoom_api_secret = user_profile.realm.zoom_api_secret
-        if not zoom_user_id:
-            return json_error(_('User ID cannot be empty'))
-        if not zoom_api_key:
-            return json_error(_('API key cannot be empty'))
-        if not zoom_api_secret:
-            return json_error(_('API secret cannot be empty'))
-        # If any of the Zoom settings have changed, validate the Zoom credentials.
-        #
-        # Technically, we could call some other API endpoint that
-        # doesn't create a video call link, but this is a nicer
-        # end-to-end test, since it verifies that the Zoom API user's
-        # scopes includes the ability to create video calls, which is
-        # the only capabiility we use.
-        if ((zoom_user_id != realm.zoom_user_id or
-             zoom_api_key != realm.zoom_api_key or
-             zoom_api_secret != realm.zoom_api_secret) and
-                not request_zoom_video_call_url(zoom_user_id, zoom_api_key, zoom_api_secret)):
-            return json_error(_('Invalid credentials for the %(third_party_service)s API.') % dict(
-                third_party_service="Zoom"))
 
     # Additional validation of enum-style values
     if bot_creation_policy is not None and bot_creation_policy not in Realm.BOT_CREATION_POLICY_TYPES:

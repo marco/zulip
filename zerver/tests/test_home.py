@@ -183,9 +183,6 @@ class HomeTest(ZulipTestCase):
             "realm_users",
             "realm_video_chat_provider",
             "realm_waiting_period_threshold",
-            "realm_zoom_api_key",
-            "realm_zoom_api_secret",
-            "realm_zoom_user_id",
             "recent_private_conversations",
             "root_domain_uri",
             "save_stacktraces",
@@ -452,6 +449,15 @@ class HomeTest(ZulipTestCase):
         result = self._get_home_page()
         page_params = self._get_page_params(result)
         self.assertEqual(page_params['realm_notifications_stream_id'], get_stream('Denmark', realm).id)
+
+    def test_video_chat_zoom_unavailable(self) -> None:
+        email = self.example_email("hamlet")
+        self.login(email)
+
+        with self.settings(VIDEO_ZOOM_CLIENT_ID=None):
+            result = self._get_home_page()
+            page_params = self._get_page_params(result)
+            self.assertFalse('zoom' in page_params['realm_available_video_chat_providers'])
 
     def create_bot(self, owner: UserProfile, bot_email: str, bot_name: str) -> UserProfile:
         user = do_create_user(

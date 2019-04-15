@@ -182,6 +182,16 @@ AUTHENTICATION_BACKENDS = (
 
 
 ########
+# Zoom Video Calling.
+#
+# Zulip supports using Zoom as a video calling provider. To learn more about
+# configuring Zoom, see:
+# https://zulip.readthedocs.io/en/latest/production/settings.html#zoom-configuration
+#
+#VIDEO_ZOOM_CLIENT_ID = <your Zoom Client ID>
+
+
+########
 # Azure Active Directory OAuth.
 #
 # To set up Microsoft Azure AD authentication, you'll need to do the following:

@@ -44,17 +44,8 @@ accounts with their respective providers.
 
 {tab|zoom}
 
-{settings_tab|organization-settings}
-
-1. Under **Other settings** set **Video chat provider** to **Zoom**.
-
-1. Enter your Zoom email address, API key, and API secret.
-
-1. Click **Save changes**.
-
-!!! warn ""
-    **Note**: Zoom support is experimental. In particular, Zulip currently
-    supports having only one active Zoom meeting at a time.
+1. If the Zoom integration is configured on the server, no additional
+configuration is required beyond selecting Zoom in the menu.
 
 {tab|jitsi-on-premise}
 

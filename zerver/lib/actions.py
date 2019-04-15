@@ -146,7 +146,6 @@ from zerver.lib.exceptions import JsonableError, ErrorCode, BugdownRenderingExce
 from zerver.lib.sessions import delete_user_sessions
 from zerver.lib.upload import attachment_url_re, attachment_url_to_path_id, \
     claim_attachment, delete_message_image, upload_emoji_image, delete_avatar_image
-from zerver.lib.video_calls import request_zoom_video_call_url
 from zerver.tornado.event_queue import send_event
 from zerver.lib.types import ProfileFieldData
 
@@ -561,9 +560,6 @@ def do_set_realm_property(realm: Realm, name: str, value: Any) -> None:
     setattr(realm, name, value)
     realm.save(update_fields=[name])
 
-    if name == 'zoom_api_secret':
-        # Send '' as the value through the API for the API secret
-        value = ''
     event = dict(
         type='realm',
         op='update',
@@ -5658,18 +5654,6 @@ def do_send_realm_reactivation_email(realm: Realm) -> None:
         'zerver/emails/realm_reactivation', realm,
         from_address=FromAddress.tokenized_no_reply_address(),
         from_name="Zulip Account Security", context=context)
-
-def get_zoom_video_call_url(realm: Realm) -> str:
-    response = request_zoom_video_call_url(
-        realm.zoom_user_id,
-        realm.zoom_api_key,
-        realm.zoom_api_secret
-    )
-
-    if response is None:
-        return ''
-
-    return response['join_url']
 
 def notify_export_completed(user_profile: UserProfile) -> None:
     # In the future, we may want to send this event to all realm admins.

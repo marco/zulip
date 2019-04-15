@@ -308,9 +308,6 @@ class Realm(models.Model):
     }
     video_chat_provider = models.PositiveSmallIntegerField(default=VIDEO_CHAT_PROVIDERS['jitsi_meet']['id'])
     google_hangouts_domain = models.TextField(default="")
-    zoom_user_id = models.TextField(default="")
-    zoom_api_key = models.TextField(default="")
-    zoom_api_secret = models.TextField(default="")
 
     # Define the types of the various automatically managed properties
     property_types = dict(
@@ -328,9 +325,6 @@ class Realm(models.Model):
         email_address_visibility=int,
         email_changes_disabled=bool,
         google_hangouts_domain=str,
-        zoom_user_id=str,
-        zoom_api_key=str,
-        zoom_api_secret=str,
         invite_required=bool,
         invite_by_admins_only=bool,
         inline_image_preview=bool,

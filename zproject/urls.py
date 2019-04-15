@@ -395,8 +395,12 @@ v1_api_and_json_patterns = [
         {'POST': ('zerver.views.report.report_unnarrow_times', {'intentionally_undocumented'})}),
 
     # Used to generate a Zoom video call URL
-    url(r'^calls/create$', rest_dispatch,
-        {'GET': 'zerver.views.video_calls.get_zoom_url'}),
+    url(r'^calls/register_zoom_user$', rest_dispatch,
+        {'GET': 'zerver.views.video_calls.register_zoom_user'}),
+    url(r'^calls/complete_zoom_user$', rest_dispatch,
+        {'GET': 'zerver.views.video_calls.complete_zoom_user'}),
+    url(r'^calls/deregister_zoom_user$', rest_dispatch,
+        {'GET': 'zerver.views.video_calls.deregister_zoom_user'}),
 
     # Used realm data exporting
     url(r'^export/realm$', rest_dispatch,

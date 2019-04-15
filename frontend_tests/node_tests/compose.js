@@ -2,6 +2,10 @@ global.patch_builtin('window', {
     bridge: false,
 });
 
+global.patch_builtin('setInterval', function (func) {
+    func();
+});
+
 set_global('blueslip', global.make_zblueslip({
     error: false, // Ignore errors. We only check for warnings in this module.
 }));
@@ -876,6 +880,11 @@ run_test('initialize', () => {
     global.window = {
         XMLHttpRequest: true,
         bridge: true,
+        location: {
+            protocol: 'http:',
+            host: "example.com",
+            pathname: "/",
+        },
     };
     var xmlhttprequest_checked = false;
     set_global('XMLHttpRequest', function () {
@@ -1465,13 +1474,22 @@ run_test('on_events', () => {
 
         page_params.realm_video_chat_provider =
             page_params.realm_available_video_chat_providers.zoom.id;
-        page_params.realm_zoom_user_id = 'example@example.com';
-        page_params.realm_zoom_api_key = 'abc';
-        page_params.realm_zoom_api_secret = 'abc';
 
-        channel.get = function (options) {
-            assert(options.url === '/json/calls/create');
-            options.success({ zoom_url: 'example.zoom.com' });
+        window.open = function (url) {
+            assert(url.endsWith('/json/calls/register_zoom_user'));
+
+            return {
+                location: {
+                    host: window.location.host,
+                },
+                document: {
+                    body: {
+                        textContent: '{ "url": "example.zoom.com" }',
+                    },
+                },
+                close: function () {
+                },
+            };
         };
 
         handler(ev);

@@ -187,10 +187,6 @@ def fetch_initial_state_data(user_profile: UserProfile,
         for property_name in Realm.property_types:
             state['realm_' + property_name] = getattr(realm, property_name)
 
-        # Don't send the zoom API secret to clients.
-        if state.get('realm_zoom_api_secret'):
-            state['realm_zoom_api_secret'] = ''
-
         # Most state is handled via the property_types framework;
         # these manual entries are for those realm settings that don't
         # fit into that framework.
@@ -206,7 +202,7 @@ def fetch_initial_state_data(user_profile: UserProfile,
         add_realm_logo_fields(state, realm)
         state['realm_bot_domain'] = realm.get_bot_domain()
         state['realm_uri'] = realm.uri
-        state['realm_available_video_chat_providers'] = realm.VIDEO_CHAT_PROVIDERS
+        state['realm_available_video_chat_providers'] = copy.deepcopy(realm.VIDEO_CHAT_PROVIDERS)
         state['realm_presence_disabled'] = realm.presence_disabled
         state['settings_send_digest_emails'] = settings.SEND_DIGEST_EMAILS
         state['realm_digest_emails_enabled'] = realm.digest_emails_enabled and settings.SEND_DIGEST_EMAILS
@@ -231,6 +227,9 @@ def fetch_initial_state_data(user_profile: UserProfile,
             state['realm_signup_notifications_stream_id'] = signup_notifications_stream.id
         else:
             state['realm_signup_notifications_stream_id'] = -1
+
+        if settings.VIDEO_ZOOM_CLIENT_ID is None or settings.VIDEO_ZOOM_CLIENT_SECRET is None:
+            del state['realm_available_video_chat_providers']['zoom']
 
     if want('realm_domains'):
         state['realm_domains'] = get_realm_domains(realm)

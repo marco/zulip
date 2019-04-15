@@ -1039,13 +1039,44 @@ exports.initialize = function () {
         if (page_params.realm_video_chat_provider === available_providers.google_hangouts.id) {
             video_call_link = "https://hangouts.google.com/hangouts/_/" + page_params.realm_google_hangouts_domain + "/" + video_call_id;
             insert_video_call_url(video_call_link, target_textarea);
-        } else if (page_params.realm_video_chat_provider === available_providers.zoom.id) {
-            channel.get({
-                url: '/json/calls/create',
-                success: function (response) {
-                    insert_video_call_url(response.zoom_url, target_textarea);
-                },
-            });
+        } else if (available_providers.zoom
+            && page_params.realm_video_chat_provider === available_providers.zoom.id) {
+            var redirect_location = window.location.protocol + '//' + window.location.host + '/json/calls/register_zoom_user';
+            var zoom_auth_window = window.open(redirect_location, 'Log In With Zoom', 'width=800,height=500');
+
+            var pollInterval = setInterval(function () {
+                try {
+                    if (zoom_auth_window.location.host !== window.location.host) {
+                        return;
+                    }
+                } catch (error) {
+                    console.log(error)
+                    // If an error occurs when checking the URL of the window,
+                    // just return and check on the next poll.
+                    return;
+                }
+
+                if (!zoom_auth_window.document.body) {
+                    compose_error(i18n.t("An error occurred when creating the Zoom video call."))
+                    zoom_auth_window.close();
+                    clearInterval(pollInterval);
+                    return;
+                }
+
+                var result = JSON.parse(zoom_auth_window.document.body.textContent);
+                var url = result.url;
+
+                if (!url) {
+                    compose_error(i18n.t("Zoom credentials have not been configured correctly."))
+                    zoom_auth_window.close();
+                    clearInterval(pollInterval);
+                    return;
+                }
+
+                insert_video_call_url(url, target_textarea);
+                zoom_auth_window.close();
+                clearInterval(pollInterval);
+            }, 10);
         } else {
             video_call_link = page_params.jitsi_server_url + "/" +  video_call_id;
             insert_video_call_url(video_call_link, target_textarea);

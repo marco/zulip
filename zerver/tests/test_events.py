@@ -1589,9 +1589,6 @@ class EventsRegisterTest(ZulipTestCase):
                 Realm.VIDEO_CHAT_PROVIDERS['google_hangouts']['id']
             ],
             google_hangouts_domain=[u"zulip.com", u"zulip.org"],
-            zoom_api_secret=[u"abc", u"xyz"],
-            zoom_api_key=[u"abc", u"xyz"],
-            zoom_user_id=[u"example@example.com", u"example@example.org"]
         )  # type: Dict[str, Any]
 
         vals = test_values.get(name)
@@ -1619,8 +1616,6 @@ class EventsRegisterTest(ZulipTestCase):
         do_set_realm_property(self.user_profile.realm, name, vals[0])
         for val in vals[1:]:
             state_change_expected = True
-            if name == "zoom_api_secret":
-                state_change_expected = False
             events = self.do_test(
                 lambda: do_set_realm_property(self.user_profile.realm, name, val),
                 state_change_expected=state_change_expected)
